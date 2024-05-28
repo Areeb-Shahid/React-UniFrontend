@@ -1,47 +1,49 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import axios from "axios";
+import { toast } from "react-toastify"; // Import toast from react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import the default CSS for react-toastify
 
 const SignUp = () => {
+  const navigate = useNavigate()
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [alertMsg, setAlertMsg] = useState("");
   const [loading, setLoading] = useState(false);
-
-  /**
-   * To disappear the error msg after 5 seconds
-   */
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setAlertMsg("");
-    }, 5000);
-
-    return () => clearTimeout(timeoutId);
-  }, [alertMsg]);
 
   /**
    *  Handles the form submission event (Signing up functionality).
    */
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    // const userData = {
-    //   firstName,
-    //   lastName,
-    //   email,
-    //   password,
-    // };
     try {
       setLoading(true);
 
-      if (!(password === confirmPassword))
-        return setAlertMsg("Passwords doesn't match");
+      const userData = {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password,
+      };
 
-      // const { data } = await axios.post("", userData);
+      // Send a POST request to the registration API
+      const response = await axios.post("http://127.0.0.1:5000/register", userData);
+
+      if (response.status === 201) {
+        // Registration successful
+        console.log("User registered successfully");
+        toast.success("User registered successfully"); // Display success toast message
+        navigate('/sign-in')
+      } else {
+        console.log("Registration failed:", response.data.message);
+        toast.error(response.data.message); // Display error toast message
+      }
     } catch (error) {
-      console.log("Failed to sign up the user: ", error.message);
+      console.error("Failed to sign up the user: ", error.message);
+      toast.error("Failed to sign up the user"); // Display error toast message
     } finally {
       setLoading(false);
     }
@@ -65,16 +67,10 @@ const SignUp = () => {
               </Link>
             </p>
           </div>
-          {alertMsg && (
-            <p className="inline-block bg-red-500 rounded px-5 py-3 mt-5 text-white text-sm">
-              {alertMsg}
-            </p>
-          )}
           <form
             onSubmit={onSubmitHandler}
-            className={`space-y-6 ${alertMsg ? "mt-5" : "mt-8"}`}
+            className="mt-8 space-y-6"
           >
-            {/* -------First and Last Name-------- */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label
@@ -116,7 +112,6 @@ const SignUp = () => {
               </div>
             </div>
 
-            {/*  -----------Email Address---------- */}
             <div>
               <label
                 htmlFor="email"
@@ -138,7 +133,6 @@ const SignUp = () => {
               </div>
             </div>
 
-            {/*  -----------Password---------- */}
             <div>
               <label
                 htmlFor="password"
@@ -159,28 +153,7 @@ const SignUp = () => {
                 />
               </div>
             </div>
-
-            {/*  -----------Confirm Password---------- */}
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Confirm Password
-              </label>
-              <div className="mt-2">
-                <input
-                  id="confirmPassword"
-                  name="confirm Password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="block w-full rounded-md border-0 px-2 py-2 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blackLight placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-
+          
             <button
               type="submit"
               className="flex w-full justify-center rounded-md bg-azure px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-opacity-85"
@@ -193,4 +166,5 @@ const SignUp = () => {
     </div>
   );
 };
+
 export default SignUp;

@@ -3,6 +3,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Posts from "./pages/Posts";
 import Details from "./pages/Details";
+import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Navbar from "./components/Navbar";
@@ -40,10 +41,11 @@ function App() {
     <>
       <Navbar />
       <Container>
-        <Routes>
+      <Routes>
           <Route path="/" element={<SignIn />} />
           <Route path="/home" element={token ? <Home /> : <Navigate to="/sign-in" />} />
           <Route path="/posts" element={token ? <Posts /> : <Navigate to="/sign-in" />} />
+          <Route path="/profile" element={token ? <Profile /> : <Navigate to="/sign-in" />} />
           <Route path="/post-details" element={token ? <Details /> : <Navigate to="/sign-in" />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />

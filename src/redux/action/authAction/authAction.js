@@ -18,7 +18,7 @@ export const login = (email, password, onSuccess) => async (dispatch) => {
 
         console.log(loginResponse.data.token);
 
-      localStorage.setItem('token', JSON.stringify(loginResponse.data.access_token));
+      localStorage.setItem('token', loginResponse.data.access_token);
       dispatch({ type: "LOGIN_SUCCESS", payload: loginResponse.data });
       onSuccess(); // Invoke the onSuccess callback to trigger redirection
       toast.success("Login successful!");
